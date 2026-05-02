@@ -36,11 +36,7 @@ jobs:
 
       # ── Configure ─────────────────────────────────────────────
       - name: Configure CMake (Release, x64)
-        run: |
-          cmake -S . -B build ^
-            -G "NMake Makefiles" ^
-            -DCMAKE_BUILD_TYPE=Release ^
-            -DCMAKE_INSTALL_PREFIX=install
+        run: cmake -S . -B build -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
 
       # ── Build ─────────────────────────────────────────────────
       - name: Build all targets
