@@ -80,7 +80,7 @@ static void DrawStatRow(Graphics& g, FontFamily& ff,
     g.FillRectangle(&brBarBg, bx, y+8, BAR_W, BAR_H);
 
     // Bar fill
-    float pct = max(0.f, min(100.f, value));
+    float pct = (value < 0.f) ? 0.f : (value > 100.f) ? 100.f : value;
     int fillW = (int)(BAR_W * pct / 100.f);
     if (fillW > 0) {
         SolidBrush brBar(barColor);
