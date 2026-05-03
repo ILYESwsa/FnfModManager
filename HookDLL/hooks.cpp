@@ -58,7 +58,12 @@ typedef VkResult(VKAPI_ATTR VKAPI_CALL* PFN_VkQueuePresent)(VkQueue, const VkPre
 static PFN_VkQueuePresent g_origVkPresent   = nullptr;
 
 // Forward declaration
-static VkResult VKAPI_ATTR VKAPI_CALL HookedVkPresent(VkQueue, const VkPresentInfoKHR*);
+static VkResult VKAPI_ATTR VKAPI_CALL HookedVkPresent(VkQueue q, const VkPresentInfoKHR* p)
+{
+    g_fps.OnFrame();
+    UpdateShared("Vulkan");
+    return g_origVkPresent(q, p);
+}
 
 // ----------------------------------------------------------------
 // Shared helpers
