@@ -13,6 +13,7 @@
 #include <d3d11.h>
 #include <d3d12.h>
 #include <psapi.h>
+#include <cstdio>
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
