@@ -4,21 +4,6 @@ MSI Afterburner / RTSS style overlay for Windows games.
 Shows FPS, frame time, CPU, RAM, and GPU usage inside the game.
 
 ---
-
-## What You Need to Upload to GitHub
-
-Every time you get a new ZIP, upload **only these files** (replace the old ones):
-
-| File | Location in repo |
-|------|-----------------|
-| `hooks.cpp` | `HookDLL/hooks.cpp` |
-| `dllmain.cpp` | `HookDLL/dllmain.cpp` |
-| `CMakeLists.txt` | `CMakeLists.txt` |
-| `build.yml` | `.github/workflows/build.yml` |
-
-> **Tip:** When uploading on GitHub.com, go to the file → click pencil icon → paste contents → commit.
-> For `.github/workflows/build.yml`, type the path manually in "Create new file" — drag and drop skips hidden folders.
-
 ---
 
 ## How to Download the Built EXE and DLL
