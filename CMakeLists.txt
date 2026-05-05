@@ -84,11 +84,21 @@ set_target_properties(OverlayEditor PROPERTIES OUTPUT_NAME "OverlayEditor")
 
 
 # ---- RTSSClone.exe (all-in-one launcher with embedded DLL) ----
-# The .rc file embeds HookDLL.dll as a binary resource.
-# CMake + MSVC handle .rc files automatically.
+# We generate the .rc file at build time pointing to the actual DLL output path.
+# This avoids the chicken-and-egg problem of needing HookDLL.dll before building.
+
+# Step 1: Generate .rc that references HookDLL by its build output path
+set(GENERATED_RC "${CMAKE_BINARY_DIR}/hookdll_embed.rc")
+set(HOOKDLL_PATH "$<TARGET_FILE:HookDLL>")
+
+file(GENERATE
+    OUTPUT "${GENERATED_RC}"
+    CONTENT "#include \"${CMAKE_SOURCE_DIR}/Launcher/resource.h\"\nIDR_HOOKDLL 256 \"$<TARGET_FILE:HookDLL>\"\n"
+)
+
 add_executable(RTSSClone WIN32
     Launcher/launcher.cpp
-    Launcher/launcher.rc
+    ${GENERATED_RC}
 )
 target_include_directories(RTSSClone PRIVATE
     ${CMAKE_SOURCE_DIR}/Shared
@@ -98,15 +108,8 @@ target_link_libraries(RTSSClone PRIVATE
     shared_headers gdiplus comctl32 comdlg32 psapi
 )
 set_target_properties(RTSSClone PROPERTIES OUTPUT_NAME "RTSSClone")
-# HookDLL must be built first so the .rc can embed it
+# HookDLL must be fully linked before RTSSClone links (rc needs the dll file)
 add_dependencies(RTSSClone HookDLL)
-# After HookDLL builds, copy it next to the .rc so the resource compiler finds it
-add_custom_command(TARGET RTSSClone PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:HookDLL>
-        ${CMAKE_SOURCE_DIR}/Launcher/HookDLL.dll
-    COMMENT "Copying HookDLL.dll for resource embedding"
-)
 
 install(TARGETS Injector HookDLL SystemStats OverlayViewer OverlayEditor RTSSClone
     RUNTIME DESTINATION bin LIBRARY DESTINATION bin)
