@@ -122,10 +122,19 @@ static std::wstring g_dllPath;
 
 static bool ExtractDll()
 {
-    // Find resource
+    // Find resource — if not found, DLL wasn't embedded at build time
     HRSRC hRes = ::FindResourceW(nullptr, MAKEINTRESOURCEW(IDR_HOOKDLL),
         MAKEINTRESOURCEW(256));
-    if (!hRes) return false;
+    if (!hRes) {
+        // Fallback: look for HookDLL.dll next to this exe
+        wchar_t exeDir[MAX_PATH]{};
+        ::GetModuleFileNameW(nullptr, exeDir, MAX_PATH);
+        std::wstring ep(exeDir);
+        auto sl = ep.find_last_of(L"\/");
+        if (sl != std::wstring::npos) ep = ep.substr(0,sl+1);
+        g_dllPath = ep + L"HookDLL.dll";
+        return ::GetFileAttributesW(g_dllPath.c_str()) != INVALID_FILE_ATTRIBUTES;
+    }
 
     HGLOBAL hGlob = ::LoadResource(nullptr, hRes);
     if (!hGlob) return false;
@@ -685,14 +694,12 @@ int WINAPI wWinMain(HINSTANCE hInst,HINSTANCE,LPWSTR,int)
     GdiplusStartupInput gsi;
     GdiplusStartup(&g_gdip,&gsi,nullptr);
 
-    // Extract DLL from resource
-    if(!ExtractDll())
-        ::MessageBoxW(nullptr,
-            L"Failed to extract HookDLL — make sure the build included the DLL resource.",
-            L"RTSS Clone",MB_ICONERROR);
+    // Extract DLL from resource (silent fallback if not embedded)
+    ExtractDll();
 
     RefreshProcs();
     LoadCfg();
+    if (g_oc.position > 5) g_oc.position = 0; // safety clamp
 
     WNDCLASSEXW wc{sizeof(wc)};
     wc.lpfnWndProc=WndProc; wc.hInstance=hInst;
