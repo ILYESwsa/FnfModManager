@@ -1,0 +1,40 @@
+# Build artifacts
+build/
+install/
+artifacts/
+out/
+bin/
+lib/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+
+# MSVC
+*.obj
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.idb
+
+# IDE
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+.idea/
+*.suo
+
+# FetchContent cache (can be re-downloaded)
+_deps/
+
+# imgui.ini
+imgui.ini
+
+# OS
+.DS_Store
+Thumbs.db
